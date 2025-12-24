@@ -27,8 +27,7 @@ public:
     }
   }
 
-  template <typename U>
-  bool try_put(U&& value) {
+  bool try_put(T&& value) {
     size_t local_write_idx = write_idx_.load(std::memory_order_relaxed);
     while (true) {
       size_t local_read_idx = read_idx_.load(std::memory_order_acquire);
@@ -43,7 +42,7 @@ public:
     }
 
     auto& slot = slots_[local_write_idx % size_];
-    slot.data_ = std::forward<U>(value);
+    slot.data_ = std::forward<T>(value);
     slot.sequence_idx_.store(local_write_idx + 1, std::memory_order_release);
     return true;
   }
